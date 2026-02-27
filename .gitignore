@@ -1,0 +1,25 @@
+# Environment files
+.env
+.env.*
+**/.env
+
+# Docker app config / state folders
+**/data/
+**/config/
+**/logs/
+
+# Let’s Encrypt / reverse proxy certs
+**/letsencrypt/
+**/acme.json
+
+# Database files
+**/mysql/
+**/*.db
+
+# Media & downloads
+/media/
+/downloads/
+
+# OS junk
+.DS_Store
+Thumbs.db
