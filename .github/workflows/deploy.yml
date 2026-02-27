@@ -10,4 +10,7 @@ jobs:
     steps:
       - name: Deploy
         run: |
+          whoami
+          id
+          ls -la /srv/homelab/.git | head
           /srv/homelab/deploy.sh
