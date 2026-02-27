@@ -1,0 +1,17 @@
+services:
+  plex:
+    container_name: plex
+    image: ghcr.io/hotio/plex
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+      UMASK: 002
+    volumes:
+      - ${DOCKER_ROOT}/plex:/config
+      - ${MEDIA}:/plex
+      - /tmp:/transcode
+    devices:
+      - /dev/dri:/dev/dri

@@ -11,7 +11,7 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ./transmission:/config
+      - ${DOCKER_ROOT}/downloaders/transmission:/config
       - ${DOWNLOADS}:/downloads
     ports:
       - 9091:9091
@@ -20,8 +20,6 @@ services:
     networks:
       - media_net
     restart: unless-stopped
-    env_file:
-      - ../../.env
 
   deluge:
     image: lscr.io/linuxserver/deluge:latest
@@ -32,7 +30,7 @@ services:
       - TZ=${TZ}
       - DELUGE_LOGLEVEL=error
     volumes:
-      - ./deluge:/config
+      - ${DOCKER_ROOT}/downloaders/deluge:/config
       - ${DOWNLOADS}:/downloads
     ports:
       - 8112:8112
@@ -41,5 +39,3 @@ services:
     networks:
       - media_net
     restart: unless-stopped
-    env_file:
-      - ../../.env

@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  crafty:
+    container_name: crafty
+    image: registry.gitlab.com/crafty-controller/crafty-4:latest
+    restart: always
+    environment:
+        - TZ=${TZ}
+        - JVM_OPTS="-Dio.netty.leakDetection.level=DISABLED"
+    ports:
+        - "8001:8000" # HTTP
+        - "8443:8443" # HTTPS
+        - "8125:8123" # DYNMAP
+        - "25560-25570:25560-25570" # MC SERV PORT RANGE
+    volumes:
+        - ${DOCKER_ROOT}/minecraft/backups:/crafty/backups
+        - ${DOCKER_ROOT}/minecraft/logs:/crafty/logs
+        - ${DOCKER_ROOT}/minecraft/servers:/crafty/servers
+        - ${DOCKER_ROOT}/minecraft/config:/crafty/app/config
+        - ${DOCKER_ROOT}/minecraft/import:/crafty/import

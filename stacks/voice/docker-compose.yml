@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  mumble:
+    image: mumblevoip/mumble-server:latest
+    container_name: murmur
+    restart: unless-stopped
+
+    ports:
+      - "64738:64738"
+      - "64738:64738/udp"
+
+    volumes:
+      - murmur-data:/data
+
+    environment:
+      - TZ=${TZ}
+      - MUMBLE_SUPERUSER_PASSWORD=${MUMBLE_SUPERUSER_PASSWORD}
+      - MUMBLE_SERVER_PASSWORD=${MUMBLE_SERVER_PASSWORD}
+      - MUMBLE_USERS=${MUMBLE_USERS}
+      - MUMBLE_BANDWIDTH=72000
+
+volumes:
+  murmur-data:

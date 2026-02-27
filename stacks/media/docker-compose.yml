@@ -13,13 +13,11 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ./prowlarr:/config
+      - ${DOCKER_ROOT}/arr/prowlarr:/config
     networks:
       - media_net
       - proxy_net
     restart: unless-stopped
-    env_file:
-      - ../../.env
 
   radarr:
     image: ghcr.io/linuxserver/radarr:latest
@@ -30,15 +28,13 @@ services:
       - TZ=${TZ}
       - UMASK=022
     volumes:
-      - ./radarr:/config
-      - /media/plex:/media
+      - ${DOCKER_ROOT}/arr/radarr:/config
+      - ${MEDIA}:/media
       - ${DOWNLOADS}:/downloads
     networks:
       - media_net
       - proxy_net
     restart: unless-stopped
-    env_file:
-      - ../../.env
 
   sonarr:
     image: ghcr.io/linuxserver/sonarr:latest
@@ -49,15 +45,13 @@ services:
       - TZ=${TZ}
       - UMASK=022
     volumes:
-      - ./sonarr:/config
-      - /media/plex:/media
+      - ${DOCKER_ROOT}/arr/sonarr:/config
+      - ${MEDIA}:/media
       - ${DOWNLOADS}:/downloads
     networks:
       - media_net
       - proxy_net
     restart: unless-stopped
-    env_file:
-      - ../../.env
 
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -71,5 +65,3 @@ services:
       - media_net
       - proxy_net
     restart: unless-stopped
-    env_file:
-      - ../../.env
