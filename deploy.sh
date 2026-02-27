@@ -1,18 +1,10 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 cd /srv/homelab
-
-echo "Pulling latest from Git..."
 git pull
 
-echo "Deploying each stack..."
-
-for stack in stacks/*; do
-  if [ -f "$stack/docker-compose.yml" ]; then
-    echo "Deploying $stack..."
-    docker compose -f "$stack/docker-compose.yml" up -d
-  fi
+for f in /srv/homelab/stacks/*/docker-compose.yml; do
+  echo "Deploying $f"
+  docker compose --env-file /srv/homelab/.env -f "$f" up -d
 done
-
-echo "Done."
