@@ -7,3 +7,5 @@ testing whether the repo updates automatically
 test 2
 
 test 3
+
+test 4
