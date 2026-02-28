@@ -23,6 +23,3 @@
 # OS junk
 .DS_Store
 Thumbs.db
-
-# Ignore deployment script
-deploy.sh
