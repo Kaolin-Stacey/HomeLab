@@ -34,7 +34,7 @@ jobs:
 
           # Pi-hole stack env
           mkdir -p /srv/homelab/stacks/services
-          PIHOLE_ENV="/srv/homelab/stacks/services/stack.env"
+          PIHOLE_ENV="/srv/homelab/stacks/services/.env"
           echo "PIHOLE_WEBPASSWORD=${{ secrets.PIHOLE_WEBPASSWORD }}" > "$PIHOLE_ENV"
 
       - name: Deploy
