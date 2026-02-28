@@ -8,6 +8,15 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
+      - name: Sync repo to origin/main
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /srv/homelab
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fd
+
       - name: Write env files from GitHub Secrets
         shell: bash
         run: |
@@ -28,22 +37,8 @@ jobs:
           PIHOLE_ENV="/srv/homelab/stacks/pihole/stack.env"
           echo "PIHOLE_WEBPASSWORD=${{ secrets.PIHOLE_WEBPASSWORD }}" > "$PIHOLE_ENV"
 
-          # Plex stack env
-          mkdir -p /srv/homelab/stacks/plex
-          PLEX_ENV="/srv/homelab/stacks/plex/stack.env"
-          echo "PLEX_TOKEN=${{ secrets.PLEX_TOKEN }}" > "$PLEX_ENV"
-
-      - name: Sync repo to origin/main
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd /srv/homelab
-          git fetch origin main
-          git reset --hard origin/main
-          git clean -fd
-
       - name: Deploy
         shell: bash
         run: |
           set -euo pipefail
-          /srv/homelab/deploy.sh
+          /usr/local/bin/homelab/deploy.sh
