@@ -1,7 +1,7 @@
 services:
   plex:
     container_name: plex
-    image: ghcr.io/hotio/plex
+    image: ghcr.io/hotio/plex:latest
     restart: unless-stopped
     network_mode: host
     environment:
