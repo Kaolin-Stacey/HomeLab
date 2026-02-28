@@ -4,7 +4,19 @@ set -euo pipefail
 cd /srv/homelab
 git pull
 
-for f in /srv/homelab/stacks/*/docker-compose.yml; do
-  echo "Deploying $f"
-  docker compose --env-file /srv/homelab/.env -f "$f" up -d
+for stack_dir in /srv/homelab/stacks/*; do
+  compose="$stack_dir/docker-compose.yml"
+  [ -f "$compose" ] || continue
+
+  echo "Deploying $compose"
+
+  # Base env (global)
+  args=(--env-file /srv/homelab/.env)
+
+  # Optional stack override env
+  if [ -f "$stack_dir/stack.env" ]; then
+    args+=(--env-file "$stack_dir/stack.env")
+  fi
+
+  docker compose "${args[@]}" -f "$compose" up -d
 done
