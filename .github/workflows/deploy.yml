@@ -33,8 +33,8 @@ jobs:
           echo "TZ=${{ secrets.TZ }}" >> "$ENV_PATH"
 
           # Pi-hole stack env
-          mkdir -p /srv/homelab/stacks/pihole
-          PIHOLE_ENV="/srv/homelab/stacks/pihole/stack.env"
+          mkdir -p /srv/homelab/stacks/services
+          PIHOLE_ENV="/srv/homelab/stacks/services/stack.env"
           echo "PIHOLE_WEBPASSWORD=${{ secrets.PIHOLE_WEBPASSWORD }}" > "$PIHOLE_ENV"
 
       - name: Deploy
