@@ -33,6 +33,15 @@ jobs:
           PLEX_ENV="/srv/homelab/stacks/plex/stack.env"
           echo "PLEX_TOKEN=${{ secrets.PLEX_TOKEN }}" > "$PLEX_ENV"
 
+      - name: Sync repo to origin/main
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /srv/homelab
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fd
+
       - name: Deploy
         shell: bash
         run: |

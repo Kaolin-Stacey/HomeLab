@@ -2,7 +2,6 @@
 set -euo pipefail
 
 cd /srv/homelab
-git pull
 
 for stack_dir in /srv/homelab/stacks/*; do
   compose="$stack_dir/docker-compose.yml"
