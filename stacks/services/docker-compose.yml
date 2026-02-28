@@ -22,14 +22,19 @@ services:
     image: pihole/pihole:latest
     container_name: pihole
     restart: unless-stopped
-    network_mode: "host"
+    ports:
+          - "53:53/tcp"
+          - "53:53/udp"
+          - "8082:80/tcp" # Pi-hole admin interface
     environment:
       TZ: ${TZ}
       WEBPASSWORD: ${PIHOLE_WEBPASSWORD}
-      # Pick sane upstreams or your router
       DNS1: 1.1.1.1
       DNS2: 9.9.9.9
-      # If you later add DHCP in Pi-hole, set your router to stop doing DHCP first
     volumes:
       - ${DOCKER_ROOT}/pihole/etc-pihole:/etc/pihole
       - ${DOCKER_ROOT}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - proxy_net
