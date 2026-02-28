@@ -10,7 +10,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "81:81"   # NPM admin UI
+      - "192.168.3.5:81:81"   # NPM admin UI
     environment:
       - TZ=${TZ}
     volumes:
@@ -18,3 +18,18 @@ services:
       - ${DOCKER_ROOT}/npm/letsencrypt:/etc/letsencrypt
     networks:
       - proxy_net
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      TZ: ${TZ}
+      WEBPASSWORD: ${PIHOLE_WEBPASSWORD}
+      # Pick sane upstreams or your router
+      DNS1: 1.1.1.1
+      DNS2: 9.9.9.9
+      # If you later add DHCP in Pi-hole, set your router to stop doing DHCP first
+    volumes:
+      - ${DOCKER_ROOT}/pihole/etc-pihole:/etc/pihole
+      - ${DOCKER_ROOT}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
