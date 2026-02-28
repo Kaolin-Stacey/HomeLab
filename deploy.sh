@@ -14,8 +14,8 @@ for stack_dir in /srv/homelab/stacks/*; do
   args=(--env-file /srv/homelab/.env)
 
   # Optional stack override env
-  if [ -f "$stack_dir/stack.env" ]; then
-    args+=(--env-file "$stack_dir/stack.env")
+  if [ -f "$stack_dir/.env" ]; then
+    args+=(--env-file "$stack_dir/.env")
   fi
 
   docker compose "${args[@]}" -f "$compose" up -d

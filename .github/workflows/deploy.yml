@@ -2,12 +2,51 @@ name: Deploy homelab
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Deploy
+      - name: Write env files from GitHub Secrets
+        shell: bash
         run: |
+          set -euo pipefail
+          umask 077
+
+          # Global (shared, mostly non-sensitive)
+          tmp="$(mktemp)"
+          cat > "$tmp" <<EOF
+DOCKER_ROOT=${{ secrets.DOCKER_ROOT }}
+DOWNLOADS=${{ secrets.DOWNLOADS }}
+MEDIA=${{ secrets.MEDIA }}
+PGID=${{ secrets.PGID }}
+PUID=${{ secrets.PUID }}
+TZ=${{ secrets.TZ }}
+EOF
+          sed -i 's/\r$//' "$tmp"
+          mv "$tmp" /srv/homelab/.env
+
+          # Pi-hole (stack-specific secret)
+          mkdir -p /srv/homelab/stacks/pihole
+          tmp="$(mktemp)"
+          cat > "$tmp" <<EOF
+PIHOLE_WEBPASSWORD=${{ secrets.PIHOLE_WEBPASSWORD }}
+EOF
+          sed -i 's/\r$//' "$tmp"
+          mv "$tmp" /srv/homelab/stacks/pihole/stack.env
+
+          # Plex (token/claim goes here)
+          mkdir -p /srv/homelab/stacks/plex
+          tmp="$(mktemp)"
+          cat > "$tmp" <<EOF
+PLEX_CLAIM=${{ secrets.PLEX_CLAIM }}
+EOF
+          sed -i 's/\r$//' "$tmp"
+          mv "$tmp" /srv/homelab/stacks/plex/stack.env
+
+      - name: Deploy
+        shell: bash
+        run: |
+          set -euo pipefail
           /srv/homelab/deploy.sh
