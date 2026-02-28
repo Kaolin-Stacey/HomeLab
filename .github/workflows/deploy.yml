@@ -15,35 +15,23 @@ jobs:
           umask 077
 
           # Global env
-          TMP_ENV="$(mktemp)"
-          cat > "$TMP_ENV" <<EOF
-DOCKER_ROOT=${{ secrets.DOCKER_ROOT }}
-DOWNLOADS=${{ secrets.DOWNLOADS }}
-MEDIA=${{ secrets.MEDIA }}
-PGID=${{ secrets.PGID }}
-PUID=${{ secrets.PUID }}
-TZ=${{ secrets.TZ }}
-EOF
-          sed -i 's/\r$//' "$TMP_ENV"
-          mv "$TMP_ENV" /srv/homelab/.env
+          ENV_PATH="/srv/homelab/.env"
+          echo "DOCKER_ROOT=${{ secrets.DOCKER_ROOT }}" > "$ENV_PATH"
+          echo "DOWNLOADS=${{ secrets.DOWNLOADS }}" >> "$ENV_PATH"
+          echo "MEDIA=${{ secrets.MEDIA }}" >> "$ENV_PATH"
+          echo "PGID=${{ secrets.PGID }}" >> "$ENV_PATH"
+          echo "PUID=${{ secrets.PUID }}" >> "$ENV_PATH"
+          echo "TZ=${{ secrets.TZ }}" >> "$ENV_PATH"
 
-          # Pi-hole env (stack-specific)
+          # Pi-hole stack env
           mkdir -p /srv/homelab/stacks/pihole
-          TMP_ENV="$(mktemp)"
-          cat > "$TMP_ENV" <<EOF
-PIHOLE_WEBPASSWORD=${{ secrets.PIHOLE_WEBPASSWORD }}
-EOF
-          sed -i 's/\r$//' "$TMP_ENV"
-          mv "$TMP_ENV" /srv/homelab/stacks/pihole/stack.env
+          PIHOLE_ENV="/srv/homelab/stacks/pihole/stack.env"
+          echo "PIHOLE_WEBPASSWORD=${{ secrets.PIHOLE_WEBPASSWORD }}" > "$PIHOLE_ENV"
 
-          # Plex env (optional)
+          # Plex stack env
           mkdir -p /srv/homelab/stacks/plex
-          TMP_ENV="$(mktemp)"
-          cat > "$TMP_ENV" <<EOF
-PLEX_TOKEN=${{ secrets.PLEX_TOKEN }}
-EOF
-          sed -i 's/\r$//' "$TMP_ENV"
-          mv "$TMP_ENV" /srv/homelab/stacks/plex/stack.env
+          PLEX_ENV="/srv/homelab/stacks/plex/stack.env"
+          echo "PLEX_TOKEN=${{ secrets.PLEX_TOKEN }}" > "$PLEX_ENV"
 
       - name: Deploy
         shell: bash
