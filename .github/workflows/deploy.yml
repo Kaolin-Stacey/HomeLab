@@ -14,9 +14,9 @@ jobs:
           set -euo pipefail
           umask 077
 
-          # Global (shared, mostly non-sensitive)
-          tmp="$(mktemp)"
-          cat > "$tmp" <<EOF
+          # Global env
+          TMP_ENV="$(mktemp)"
+          cat > "$TMP_ENV" <<EOF
 DOCKER_ROOT=${{ secrets.DOCKER_ROOT }}
 DOWNLOADS=${{ secrets.DOWNLOADS }}
 MEDIA=${{ secrets.MEDIA }}
@@ -24,26 +24,26 @@ PGID=${{ secrets.PGID }}
 PUID=${{ secrets.PUID }}
 TZ=${{ secrets.TZ }}
 EOF
-          sed -i 's/\r$//' "$tmp"
-          mv "$tmp" /srv/homelab/.env
+          sed -i 's/\r$//' "$TMP_ENV"
+          mv "$TMP_ENV" /srv/homelab/.env
 
-          # Pi-hole (stack-specific secret)
+          # Pi-hole env (stack-specific)
           mkdir -p /srv/homelab/stacks/pihole
-          tmp="$(mktemp)"
-          cat > "$tmp" <<EOF
+          TMP_ENV="$(mktemp)"
+          cat > "$TMP_ENV" <<EOF
 PIHOLE_WEBPASSWORD=${{ secrets.PIHOLE_WEBPASSWORD }}
 EOF
-          sed -i 's/\r$//' "$tmp"
-          mv "$tmp" /srv/homelab/stacks/pihole/stack.env
+          sed -i 's/\r$//' "$TMP_ENV"
+          mv "$TMP_ENV" /srv/homelab/stacks/pihole/stack.env
 
-          # Plex (token/claim goes here)
+          # Plex env (optional)
           mkdir -p /srv/homelab/stacks/plex
-          tmp="$(mktemp)"
-          cat > "$tmp" <<EOF
-PLEX_CLAIM=${{ secrets.PLEX_CLAIM }}
+          TMP_ENV="$(mktemp)"
+          cat > "$TMP_ENV" <<EOF
+PLEX_TOKEN=${{ secrets.PLEX_TOKEN }}
 EOF
-          sed -i 's/\r$//' "$tmp"
-          mv "$tmp" /srv/homelab/stacks/plex/stack.env
+          sed -i 's/\r$//' "$TMP_ENV"
+          mv "$TMP_ENV" /srv/homelab/stacks/plex/stack.env
 
       - name: Deploy
         shell: bash
