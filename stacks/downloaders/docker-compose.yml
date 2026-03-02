@@ -15,9 +15,12 @@ services:
     volumes:
       - ${DOCKER_ROOT}/downloaders/transmission:/config
       - ${DOWNLOADS}:/downloads
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
     networks:
       - media_net
-      - proxy_net
     restart: unless-stopped
 
   deluge:
@@ -31,7 +34,10 @@ services:
     volumes:
       - ${DOCKER_ROOT}/downloaders/deluge:/config
       - ${DOWNLOADS}:/downloads
+    ports:
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
     networks:
       - media_net
-      - proxy_net
     restart: unless-stopped
