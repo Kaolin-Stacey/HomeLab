@@ -1,5 +1,7 @@
 version: '3'
-
+networks:
+  proxy_net:
+    external: true
 services:
   crafty:
     container_name: crafty
@@ -9,7 +11,6 @@ services:
         - TZ=${TZ}
         - JVM_OPTS="-Dio.netty.leakDetection.level=DISABLED"
     ports:
-        - "8001:8000" # HTTP
         - "8443:8443" # HTTPS
         - "8125:8123" # DYNMAP
         - "25560-25570:25560-25570" # MC SERV PORT RANGE
@@ -19,3 +20,5 @@ services:
         - ${DOCKER_ROOT}/minecraft/servers:/crafty/servers
         - ${DOCKER_ROOT}/minecraft/config:/crafty/app/config
         - ${DOCKER_ROOT}/minecraft/import:/crafty/import
+    networks:
+        - proxy_net
