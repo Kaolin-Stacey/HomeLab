@@ -1,0 +1,9 @@
+Port 22
+Protocol 2
+PermitRootLogin no
+PasswordAuthentication yes
+PubkeyAuthentication yes
+X11Forwarding no
+UsePAM yes
+PrintMotd no
+Subsystem sftp /usr/lib/openssh/sftp-server

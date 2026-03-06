@@ -1,0 +1,16 @@
+services:
+  ubuntu-dev:
+    build: .
+    container_name: ubuntu-dev
+    hostname: ubuntu-dev
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    ports:
+      - "22222:22"
+    volumes:
+      - ${DOCKER_ROOT}/ubuntu:/workspace
+    environment:
+      USERNAME: kaolin
+      PASSWORD: kaolin
+      TZ: ${TZ}
