@@ -11,9 +11,10 @@ services:
         - TZ=${TZ}
         - JVM_OPTS="-Dio.netty.leakDetection.level=DISABLED"
     ports:
-        - "8443:8443" # HTTPS
-        - "8125:8123" # DYNMAP
-        - "25560-25570:25560-25570" # MC SERV PORT RANGE
+    - "8443:8443"           # HTTPS (tcp)
+    - "8125:8123"           # Dynmap (tcp)
+    - "25560-25570:25560-25570/tcp"
+    - "25560-25570:25560-25570/udp"
     volumes:
         - ${DOCKER_ROOT}/minecraft/backups:/crafty/backups
         - ${DOCKER_ROOT}/minecraft/logs:/crafty/logs
