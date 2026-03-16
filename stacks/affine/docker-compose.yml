@@ -74,6 +74,8 @@ services:
       REDIS_SERVER_HOST: redis
       DATABASE_URL: postgresql://affine:${AFFINE_DB_PASSWORD}@postgres:5432/affine
       AFFINE_INDEXER_ENABLED: "false"
+      AFFINE_SERVER_HTTPS: "true"
+      AFFINE_SERVER_EXTERNAL_URL: ${AFFINE_SERVER_EXTERNAL_URL}
     depends_on:
       postgres:
         condition: service_healthy

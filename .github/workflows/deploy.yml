@@ -26,6 +26,7 @@ jobs:
           # Global env
           ENV_PATH="/srv/homelab/.env"
           echo "AFFINE_DB_PASSWORD=${{ secrets.AFFINE_DB_PASSWORD }}" > "$ENV_PATH"
+          echo "AFFINE_SERVER_EXTERNAL_URL=${{ secrets.AFFINE_SERVER_EXTERNAL_URL }}" >> "$ENV_PATH"
           echo "DOCKER_ROOT=${{ secrets.DOCKER_ROOT }}" >> "$ENV_PATH"
           echo "DOWNLOADS=${{ secrets.DOWNLOADS }}" >> "$ENV_PATH"
           echo "MEDIA=${{ secrets.MEDIA }}" >> "$ENV_PATH"
