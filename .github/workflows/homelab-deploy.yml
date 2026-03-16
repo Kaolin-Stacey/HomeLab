@@ -1,4 +1,4 @@
-name: Homelab Sync
+name: Homelab Deploy
 
 on:
   push:
@@ -18,10 +18,12 @@ jobs:
           git reset --hard origin/main
           git clean -fd
 
-      - name: Deploy stacks
+      - name: Deploy changed stacks
         shell: bash
         env:
           ALL_SECRETS_JSON: ${{ toJson(secrets) }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          /usr/local/bin/homelab/compose-with-secrets.sh up
+          /usr/local/bin/homelab/compose-changed.sh "$BEFORE_SHA" "$AFTER_SHA"
