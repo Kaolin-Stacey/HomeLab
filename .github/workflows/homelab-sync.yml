@@ -1,4 +1,4 @@
-name: Deploy homelab
+name: Homelab Sync
 
 on:
   push:
