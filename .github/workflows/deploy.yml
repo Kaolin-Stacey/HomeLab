@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+
     steps:
       - name: Sync repo to origin/main
         shell: bash
@@ -17,27 +18,48 @@ jobs:
           git reset --hard origin/main
           git clean -fd
 
-      - name: Write env files from GitHub Secrets
+      - name: Generate .env from compose variables
         shell: bash
+        env:
+          ALL_SECRETS_JSON: ${{ toJson(secrets) }}
         run: |
           set -euo pipefail
           umask 077
 
-          # Global env
-          ENV_PATH="/srv/homelab/.env"
-          echo "AFFINE_DB_PASSWORD=${{ secrets.AFFINE_DB_PASSWORD }}" > "$ENV_PATH"
-          echo "AFFINE_SERVER_EXTERNAL_URL=${{ secrets.AFFINE_SERVER_EXTERNAL_URL }}" >> "$ENV_PATH"
-          echo "DOCKER_ROOT=${{ secrets.DOCKER_ROOT }}" >> "$ENV_PATH"
-          echo "DOWNLOADS=${{ secrets.DOWNLOADS }}" >> "$ENV_PATH"
-          echo "MEDIA=${{ secrets.MEDIA }}" >> "$ENV_PATH"
-          echo "PGID=${{ secrets.PGID }}" >> "$ENV_PATH"
-          echo "PUID=${{ secrets.PUID }}" >> "$ENV_PATH"
-          echo "TZ=${{ secrets.TZ }}" >> "$ENV_PATH"
+          cd /srv/homelab
 
-          # Pi-hole stack env
-          mkdir -p /srv/homelab/stacks/services
-          PIHOLE_ENV="/srv/homelab/stacks/services/.env"
-          echo "PIHOLE_WEBPASSWORD=${{ secrets.PIHOLE_WEBPASSWORD }}" > "$PIHOLE_ENV"
+          GLOBAL_ENV="/srv/homelab/.env"
+          : > "$GLOBAL_ENV"
+
+          # Find compose files
+          mapfile -t compose_files < <(
+            find /srv/homelab/stacks -type f \
+              \( -name "docker-compose.yml" -o -name "compose.yml" \)
+          )
+
+          # Extract ${VAR} references
+          mapfile -t vars < <(
+            grep -rhoE '\$\{[A-Za-z_][A-Za-z0-9_]*([:?-][^}]*)?\}' "${compose_files[@]}" \
+            | sed -E 's/^\$\{([A-Za-z_][A-Za-z0-9_]*).*$/\1/' \
+            | sort -u
+          )
+
+          echo "Found variables:"
+          printf ' - %s\n' "${vars[@]}"
+
+          # Look them up in secrets
+          for v in "${vars[@]}"; do
+            value="$(jq -r --arg k "$v" '.[$k] // empty' <<< "$ALL_SECRETS_JSON")"
+
+            if [ -n "$value" ] && [ "$value" != "null" ]; then
+              printf '%s=%s\n' "$v" "$value" >> "$GLOBAL_ENV"
+            else
+              echo "Skipping $v (not in GitHub secrets)"
+            fi
+          done
+
+          echo ".env generated:"
+          cat "$GLOBAL_ENV"
 
       - name: Deploy
         shell: bash
