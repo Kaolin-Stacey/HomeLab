@@ -21,16 +21,7 @@ jobs:
       - name: Deploy stacks
         shell: bash
         env:
-          CAPTCHA_SOLVER: ${{ secrets.CAPTCHA_SOLVER }}
-          PIHOLE_WEBPASSWORD: ${{ secrets.PIHOLE_WEBPASSWORD }}
-          MUMBLE_SERVER_PASSWORD: ${{ secrets.MUMBLE_SERVER_PASSWORD }}
-          MUMBLE_SUPERUSER_PASSWORD: ${{ secrets.MUMBLE_SUPERUSER_PASSWORD }}
-
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-
+          ALL_SECRETS_JSON: ${{ toJson(secrets) }}
         run: |
           set -euo pipefail
           /usr/local/bin/homelab/compose-with-secrets.sh up

@@ -1,0 +1,27 @@
+name: Deploy homelab
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Sync repo to origin/main
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /srv/homelab
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fd
+
+      - name: Deploy stacks
+        shell: bash
+        env:
+          ALL_SECRETS_JSON: ${{ toJson(secrets) }}
+        run: |
+          set -euo pipefail
+          /usr/local/bin/homelab/compose-with-secrets.sh up

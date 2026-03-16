@@ -4,18 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "Compose action"
+        description: Compose action
         required: true
-        default: "up"
+        default: up
         type: choice
         options:
           - up
           - down
           - restart
           - pull
-
       stack:
-        description: "Optional stack name (leave empty for all)"
+        description: Optional stack name, leave empty for all
         required: false
         default: ""
 
@@ -24,7 +23,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Sync repo
+      - name: Sync repo to origin/main
         shell: bash
         run: |
           set -euo pipefail
@@ -36,12 +35,7 @@ jobs:
       - name: Run compose control
         shell: bash
         env:
-          # Secrets injected here
-          PIHOLE_WEBPASSWORD: ${{ secrets.PIHOLE_WEBPASSWORD }}
-          MUMBLE_SERVER_PASSWORD: ${{ secrets.MUMBLE_SERVER_PASSWORD }}
-          MUMBLE_SUPERUSER_PASSWORD: ${{ secrets.MUMBLE_SUPERUSER_PASSWORD }}
-          CAPTCHA_SOLVER: ${{ secrets.CAPTCHA_SOLVER }}
-
+          ALL_SECRETS_JSON: ${{ toJson(secrets) }}
         run: |
           set -euo pipefail
 
