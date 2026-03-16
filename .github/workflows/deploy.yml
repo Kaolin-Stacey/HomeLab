@@ -18,61 +18,19 @@ jobs:
           git reset --hard origin/main
           git clean -fd
 
-      - name: Generate .env from compose variables
+      - name: Deploy stacks
         shell: bash
         env:
-          ALL_SECRETS_JSON: ${{ toJson(secrets) }}
+          CAPTCHA_SOLVER: ${{ secrets.CAPTCHA_SOLVER }}
+          PIHOLE_WEBPASSWORD: ${{ secrets.PIHOLE_WEBPASSWORD }}
+          MUMBLE_SERVER_PASSWORD: ${{ secrets.MUMBLE_SERVER_PASSWORD }}
+          MUMBLE_SUPERUSER_PASSWORD: ${{ secrets.MUMBLE_SUPERUSER_PASSWORD }}
+
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+
         run: |
           set -euo pipefail
-          umask 077
-
-          cd /srv/homelab
-
-          GLOBAL_ENV="/srv/homelab/.env"
-          : > "$GLOBAL_ENV"
-
-          export GLOBAL_ENV
-          export ALL_SECRETS_JSON
-
-          python3 <<'PY'
-          import json
-          import os
-          import re
-          from pathlib import Path
-
-          stacks_dir = Path("/srv/homelab/stacks")
-          env_path = Path(os.environ["GLOBAL_ENV"])
-          secrets = json.loads(os.environ["ALL_SECRETS_JSON"])
-
-          compose_files = sorted([
-              *stacks_dir.rglob("docker-compose.yml"),
-              *stacks_dir.rglob("compose.yml"),
-          ])
-
-          pattern = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)")
-
-          found_vars = set()
-          for compose_file in compose_files:
-              content = compose_file.read_text(encoding="utf-8")
-              found_vars.update(pattern.findall(content))
-
-          print("Found variables:")
-          for var in sorted(found_vars):
-              print(f" - {var}")
-
-          with env_path.open("w", encoding="utf-8") as f:
-              for var in sorted(found_vars):
-                  value = secrets.get(var)
-                  if value:
-                      f.write(f"{var}={value}\n")
-                  else:
-                      print(f"Skipping {var} (not in GitHub secrets)")
-          PY
-
-          echo ".env generated"
-
-      - name: Deploy
-        shell: bash
-        run: |
-          set -euo pipefail
-          /usr/local/bin/homelab/deploy.sh
+          /usr/local/bin/homelab/compose-with-secrets.sh up
