@@ -31,35 +31,45 @@ jobs:
           GLOBAL_ENV="/srv/homelab/.env"
           : > "$GLOBAL_ENV"
 
-          # Find compose files
-          mapfile -t compose_files < <(
-            find /srv/homelab/stacks -type f \
-              \( -name "docker-compose.yml" -o -name "compose.yml" \)
-          )
+          export GLOBAL_ENV
+          export ALL_SECRETS_JSON
 
-          # Extract ${VAR} references
-          mapfile -t vars < <(
-            grep -rhoE '\$\{[A-Za-z_][A-Za-z0-9_]*([:?-][^}]*)?\}' "${compose_files[@]}" \
-            | sed -E 's/^\$\{([A-Za-z_][A-Za-z0-9_]*).*$/\1/' \
-            | sort -u
-          )
+          python3 <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
 
-          echo "Found variables:"
-          printf ' - %s\n' "${vars[@]}"
+          stacks_dir = Path("/srv/homelab/stacks")
+          env_path = Path(os.environ["GLOBAL_ENV"])
+          secrets = json.loads(os.environ["ALL_SECRETS_JSON"])
 
-          # Look them up in secrets
-          for v in "${vars[@]}"; do
-            value="$(jq -r --arg k "$v" '.[$k] // empty' <<< "$ALL_SECRETS_JSON")"
+          compose_files = sorted([
+              *stacks_dir.rglob("docker-compose.yml"),
+              *stacks_dir.rglob("compose.yml"),
+          ])
 
-            if [ -n "$value" ] && [ "$value" != "null" ]; then
-              printf '%s=%s\n' "$v" "$value" >> "$GLOBAL_ENV"
-            else
-              echo "Skipping $v (not in GitHub secrets)"
-            fi
-          done
+          pattern = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)")
 
-          echo ".env generated:"
-          cat "$GLOBAL_ENV"
+          found_vars = set()
+          for compose_file in compose_files:
+              content = compose_file.read_text(encoding="utf-8")
+              found_vars.update(pattern.findall(content))
+
+          print("Found variables:")
+          for var in sorted(found_vars):
+              print(f" - {var}")
+
+          with env_path.open("w", encoding="utf-8") as f:
+              for var in sorted(found_vars):
+                  value = secrets.get(var)
+                  if value:
+                      f.write(f"{var}={value}\n")
+                  else:
+                      print(f"Skipping {var} (not in GitHub secrets)")
+          PY
+
+          echo ".env generated"
 
       - name: Deploy
         shell: bash
