@@ -1,0 +1,55 @@
+name: Homelab Control
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Compose action"
+        required: true
+        default: "up"
+        type: choice
+        options:
+          - up
+          - down
+          - restart
+          - pull
+
+      stack:
+        description: "Optional stack name (leave empty for all)"
+        required: false
+        default: ""
+
+jobs:
+  control:
+    runs-on: self-hosted
+
+    steps:
+      - name: Sync repo
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /srv/homelab
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fd
+
+      - name: Run compose control
+        shell: bash
+        env:
+          # Secrets injected here
+          PIHOLE_WEBPASSWORD: ${{ secrets.PIHOLE_WEBPASSWORD }}
+          MUMBLE_SERVER_PASSWORD: ${{ secrets.MUMBLE_SERVER_PASSWORD }}
+          MUMBLE_SUPERUSER_PASSWORD: ${{ secrets.MUMBLE_SUPERUSER_PASSWORD }}
+          CAPTCHA_SOLVER: ${{ secrets.CAPTCHA_SOLVER }}
+
+        run: |
+          set -euo pipefail
+
+          ACTION="${{ inputs.action }}"
+          STACK="${{ inputs.stack }}"
+
+          if [ -n "$STACK" ]; then
+            /usr/local/bin/homelab/compose-with-secrets.sh "$ACTION" "$STACK"
+          else
+            /usr/local/bin/homelab/compose-with-secrets.sh "$ACTION"
+          fi
