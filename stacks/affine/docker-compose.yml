@@ -76,6 +76,8 @@ services:
       AFFINE_INDEXER_ENABLED: "false"
       AFFINE_SERVER_HTTPS: "true"
       AFFINE_SERVER_EXTERNAL_URL: ${AFFINE_SERVER_EXTERNAL_URL}
+      AFFINE_MAILER_ENABLED: "false"
+      AFFINE_EMAIL_VERIFICATION_REQUIRED: "false"
     depends_on:
       postgres:
         condition: service_healthy
