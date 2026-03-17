@@ -14,6 +14,7 @@ services:
       - ${DOCKER_ROOT}/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     cap_add:
       - NET_ADMIN
       - NET_RAW
