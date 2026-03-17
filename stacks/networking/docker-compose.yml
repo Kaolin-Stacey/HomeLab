@@ -16,6 +16,8 @@ services:
     volumes:
       - ${DOCKER_ROOT}/npm/data:/data
       - ${DOCKER_ROOT}/npm/letsencrypt:/etc/letsencrypt
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - proxy_net
   pihole:

@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     privileged: true
     environment:
-      - TZ=America/Montreal
+      - TZ=${TZ}
     volumes:
       - ${DOCKER_ROOT}/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
