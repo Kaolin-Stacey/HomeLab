@@ -13,8 +13,11 @@ services:
     volumes:
       - ${DOCKER_ROOT}/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
     cap_add:
       - NET_ADMIN
       - NET_RAW
+    devices:
+      - /dev/hci0:/dev/hci0
     networks:
       - proxy_net
