@@ -2,7 +2,6 @@ services:
   homeassistant:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable
-    network_mode: host
     restart: unless-stopped
     privileged: true
     environment:
@@ -13,3 +12,5 @@ services:
     cap_add:
       - NET_ADMIN
       - NET_RAW
+    networks:
+      - proxy_net
