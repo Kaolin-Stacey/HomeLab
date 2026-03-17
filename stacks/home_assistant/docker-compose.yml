@@ -2,14 +2,14 @@ services:
   homeassistant:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable
-    restart: unless-stopped
     network_mode: host
+    restart: unless-stopped
     privileged: true
     environment:
-      - TZ=${TZ}
+      - TZ=America/Montreal
     volumes:
       - ${DOCKER_ROOT}/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
-    devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
-      - /dev/ttyACM0:/dev/ttyACM0
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
