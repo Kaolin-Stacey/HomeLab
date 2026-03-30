@@ -17,9 +17,6 @@ services:
     networks:
       - media_net
       - proxy_net
-    dns:
-      - 1.1.1.1
-      - 8.8.8.8
     restart: unless-stopped
 
   radarr:
