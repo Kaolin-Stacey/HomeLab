@@ -6,7 +6,7 @@ networks:
 
 services:
   prowlarr:
-    image: ghcr.io/linuxserver/prowlarr:develop
+    image: ghcr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
       - PUID=${PUID}
@@ -66,3 +66,17 @@ services:
     networks:
       - media_net
     restart: unless-stopped
+
+  komga:
+    image: gotson/komga
+    container_name: komga
+    volumes:
+      - ${DOCKER_ROOT}/komga:/config
+      - ${MEDIA}/manga:/manga
+    user: "${PUID}:${PGID}"
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+    networks:
+      - media_net
+      - proxy_net
