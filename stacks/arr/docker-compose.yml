@@ -53,6 +53,22 @@ services:
       - proxy_net
     restart: unless-stopped
 
+  mylar3:
+    image: ghcr.io/linuxserver/mylar3:latest
+    container_name: mylar3
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKER_ROOT}/arr/mylar3:/config
+      - ${MEDIA}/manga:/manga
+      - ${DOWNLOADS}:/downloads
+    networks:
+      - media_net
+      - proxy_net
+    restart: unless-stopped
+
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
