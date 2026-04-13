@@ -1,6 +1,10 @@
 services:
   ubuntu-dev:
-    build: .
+    build:
+      context: .
+      args:
+        USERNAME: kaolin
+        PASSWORD: kaolin
     container_name: ubuntu-dev
     hostname: ubuntu-dev
     restart: unless-stopped
@@ -11,6 +15,4 @@ services:
     volumes:
       - ${DOCKER_ROOT}/ubuntu:/workspace
     environment:
-      USERNAME: kaolin
-      PASSWORD: kaolin
       TZ: ${TZ}

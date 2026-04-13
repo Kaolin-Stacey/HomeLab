@@ -2,24 +2,8 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y \
-    openssh-server \
-    sudo \
-    git \
-    curl \
-    wget \
-    nano \
-    vim \
-    build-essential \
-    gdb \
-    valgrind \
-    ca-certificates \
-    python3 \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    python-is-python3 \
-    && rm -rf /var/lib/apt/lists/*
+COPY install-deps.sh /tmp/install-deps.sh
+RUN chmod +x /tmp/install-deps.sh && /tmp/install-deps.sh
 
 RUN mkdir /var/run/sshd
 
@@ -36,5 +20,4 @@ RUN mkdir -p /workspace \
     && chown -R ${USERNAME}:${USERNAME} /workspace
 
 EXPOSE 22
-
 CMD ["/usr/sbin/sshd", "-D"]
