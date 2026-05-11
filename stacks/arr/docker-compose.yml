@@ -48,8 +48,6 @@ services:
       - ${DOCKER_ROOT}/arr/sonarr:/config
       - ${MEDIA}:/media
       - ${DOWNLOADS}:/downloads
-    ports:
-      - "192.168.3.5:8989:8989"
     networks:
       - media_net
       - proxy_net
