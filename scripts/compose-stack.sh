@@ -44,7 +44,10 @@ vault = os.environ["VAULT_NAME"]
 item = os.environ["ITEM_NAME"]
 
 text = compose_file.read_text(encoding="utf-8")
-needed = set(re.findall(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-[^}]*)?\}", text))
+brace_vars = re.findall(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-[^}]*)?\}", text)
+plain_vars = re.findall(r"(?<!\$)\$([A-Za-z_][A-Za-z0-9_]*)", text)
+
+needed = set(brace_vars) | set(plain_vars)
 
 print("Fetching secrets from 1Password...")
 result = subprocess.run(
