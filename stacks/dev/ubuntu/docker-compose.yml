@@ -3,8 +3,8 @@ services:
     build:
       context: .
       args:
-        USERNAME: kaolin
-        PASSWORD: kaolin
+        USERNAME: ${UBUNTU-DEV-USERNAME}
+        PASSWORD: ${UBUNTU-DEV-PASSWORD}
     container_name: ubuntu-dev
     hostname: ubuntu-dev
     restart: unless-stopped

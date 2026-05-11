@@ -3,47 +3,53 @@ name: Homelab Control
 on:
   workflow_dispatch:
     inputs:
-      action:
-        description: Compose action
+      stack:
+        description: "Stack path"
         required: true
-        default: up
+        default: "media/automation"
+
+      action:
+        description: "Compose action"
+        required: true
+        default: "up"
         type: choice
         options:
           - up
           - down
           - restart
           - pull
-      stack:
-        description: Optional stack name, leave empty for all
-        required: false
-        default: ""
+          - logs
+
+      allow_core:
+        description: "Allow core stacks"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
 
 jobs:
   control:
     runs-on: self-hosted
 
     steps:
-      - name: Sync repo to origin/main
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd /srv/homelab
-          git fetch origin main
-          git reset --hard origin/main
-          git clean -fd
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Run compose control
-        shell: bash
+      - name: Sync repo
+        run: |
+          rsync -av --delete \
+            --exclude ".git" \
+            ./ /srv/homelab/
+
+      - name: Run stack script
         env:
           ALL_SECRETS_JSON: ${{ toJson(secrets) }}
+          ALLOW_CORE: ${{ github.event.inputs.allow_core }}
         run: |
-          set -euo pipefail
+          chmod +x /srv/homelab/scripts/*.sh
 
-          ACTION="${{ inputs.action }}"
-          STACK="${{ inputs.stack }}"
-
-          if [ -n "$STACK" ]; then
-            /usr/local/bin/homelab/compose-with-secrets.sh "$ACTION" "$STACK"
-          else
-            /usr/local/bin/homelab/compose-with-secrets.sh "$ACTION"
-          fi
+          /srv/homelab/scripts/compose-stack.sh \
+            "${{ github.event.inputs.stack }}" \
+            "${{ github.event.inputs.action }}"
