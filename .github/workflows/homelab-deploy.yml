@@ -8,7 +8,10 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Run deploy script
+      - name: Update repo
         run: |
-          chmod +x ~/HomeLab/scripts/deploy-repo.sh
-          ~/HomeLab/scripts/deploy-repo.sh
+          cd /srv/HomeLab
+          git fetch origin
+          git pull --ff-only origin main
+      - name: Run deploy script
+        run: /srv/HomeLab/scripts/deploy-repo.sh
