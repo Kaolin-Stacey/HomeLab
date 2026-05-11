@@ -43,20 +43,9 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Update repo
+      - name: Update repo and sync runtime
         run: |
-          cd /srv/homelab-repo
-          git fetch origin
-          git pull --ff-only origin main
-
-      - name: Deploy repo files
-        run: |
-          rsync -av --delete \
-            --exclude ".git" \
-            --exclude ".github" \
-            /srv/homelab-repo/ /srv/homelab/
-
-          chmod +x /srv/homelab/scripts/*.sh
+          /srv/homelab-repo/scripts/update-repo.sh
 
       - name: Run compose action
         env:
