@@ -1,3 +1,5 @@
+name: home_assistant
+
 networks:
   proxy_net:
     external: true

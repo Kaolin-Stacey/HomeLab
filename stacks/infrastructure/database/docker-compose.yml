@@ -1,3 +1,5 @@
+name: database
+
 services:
   mysql:
     image: mysql:latest

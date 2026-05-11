@@ -1,3 +1,5 @@
+name: npm
+
 networks:
   proxy_net:
     external: true
