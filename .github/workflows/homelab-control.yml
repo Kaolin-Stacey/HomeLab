@@ -7,6 +7,16 @@ on:
         description: "Stack path, example: media/automation"
         required: true
         default: "media/automation"
+
+      all_stacks:
+        description: "Run against all non-core stacks"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
       action:
         description: "Compose action"
         required: true
@@ -18,6 +28,7 @@ on:
           - restart
           - pull
           - logs
+
       allow_core:
         description: "Allow core stacks"
         required: true
@@ -47,13 +58,18 @@ jobs:
 
           chmod +x /srv/homelab/scripts/*.sh
 
-      - name: Run stack action
+      - name: Run compose action
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          OP_VAULT_NAME: "Your Vault Name"
+          OP_VAULT_NAME: "HomeLab"
           OP_ITEM_NAME: "Docker Compose Secrets"
           ALLOW_CORE: ${{ github.event.inputs.allow_core }}
         run: |
-          /srv/homelab/scripts/compose-stack.sh \
-            "${{ github.event.inputs.stack }}" \
-            "${{ github.event.inputs.action }}"
+          if [[ "${{ github.event.inputs.all_stacks }}" == "true" ]]; then
+            /srv/homelab/scripts/compose-all.sh \
+              "${{ github.event.inputs.action }}"
+          else
+            /srv/homelab/scripts/compose-stack.sh \
+              "${{ github.event.inputs.stack }}" \
+              "${{ github.event.inputs.action }}"
+          fi
