@@ -4,8 +4,8 @@ services:
     build:
       context: .
       args:
-        USERNAME: ${UBUNTU-DEV-USERNAME}
-        PASSWORD: ${UBUNTU-DEV-PASSWORD}
+        USERNAME: ${UBUNTU_DEV_USERNAME}
+        PASSWORD: ${UBUNTU_DEV_PASSWORD}
     container_name: ubuntu-dev
     hostname: ubuntu-dev
     restart: unless-stopped
