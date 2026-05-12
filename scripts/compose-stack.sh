@@ -43,7 +43,12 @@ action = os.environ["ACTION"]
 vault = os.environ["VAULT_NAME"]
 item = os.environ["ITEM_NAME"]
 
-text = compose_file.read_text(encoding="utf-8")
+raw_text = compose_file.read_text(encoding="utf-8")
+
+text = "\n".join(
+    line for line in raw_text.splitlines()
+    if not line.lstrip().startswith("#")
+)
 brace_vars = re.findall(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-[^}]*)?\}", text)
 plain_vars = re.findall(r"(?<!\$)\$([A-Za-z_][A-Za-z0-9_]*)", text)
 
