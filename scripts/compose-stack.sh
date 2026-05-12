@@ -49,10 +49,25 @@ text = "\n".join(
     line for line in raw_text.splitlines()
     if not line.lstrip().startswith("#")
 )
-brace_vars = re.findall(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-[^}]*)?\}", text)
-plain_vars = re.findall(r"(?<!\$)\$([A-Za-z_][A-Za-z0-9_]*)", text)
+var_pattern = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?:(:-|-)([^}]*))?\}")
+plain_pattern = re.compile(r"(?<!\$)\$([A-Za-z_][A-Za-z0-9_]*)")
 
-needed = set(brace_vars) | set(plain_vars)
+required = set()
+optional = set()
+
+for match in var_pattern.finditer(text):
+    name = match.group(1)
+    default_operator = match.group(2)
+
+    if default_operator:
+        optional.add(name)
+    else:
+        required.add(name)
+
+for name in plain_pattern.findall(text):
+    required.add(name)
+
+needed = required | optional
 
 print("Fetching secrets from 1Password...")
 result = subprocess.run(
