@@ -95,6 +95,8 @@ for name in sorted(needed):
     elif name in fields:
         env[name] = fields[name]
         print(f" - {name}: 1Password")
+    elif name in optional:
+        print(f" - {name}: default value")
     else:
         raise SystemExit(f"Missing required variable: {name}")
 
