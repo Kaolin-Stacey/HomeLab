@@ -30,3 +30,15 @@ services:
       - ${DOCKER_ROOT}/observability/grafana:/var/lib/grafana
     networks:
       - proxy_net
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - --path.rootfs=/host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    networks:
+      - proxy_net
