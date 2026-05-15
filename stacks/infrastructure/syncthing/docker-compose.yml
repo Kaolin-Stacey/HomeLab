@@ -12,6 +12,7 @@ services:
     volumes:
       - ${DOCKER_ROOT}/syncthing/config:/config
       - /srv/data/syncthing/saves:/saves
+      - /srv/data/syncthing/roms:/roms
 
     ports:
       - 8384:8384
