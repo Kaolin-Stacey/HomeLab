@@ -1,0 +1,20 @@
+name: dashboard
+
+services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/homarr-labs/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./homarr/appdata:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=${HOMARR_ENCRYPTION_KEY}
+    ports:
+      - "7575:7575"
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: true
