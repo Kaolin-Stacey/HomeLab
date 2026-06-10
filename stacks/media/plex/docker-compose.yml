@@ -1,8 +1,6 @@
 name: plex
 
 networks:
-  media_net:
-    external: true
   proxy_net:
     external: true
 
@@ -23,3 +21,22 @@ services:
       - /tmp:/transcode
     devices:
       - /dev/dri:/dev/dri
+
+  shoko-server:
+    image: shokoanime/server:latest
+    container_name: shoko-server
+    restart: unless-stopped
+    networks:
+      - proxy_net
+    volumes:
+      - ${DOCKER_ROOT}/shoko/server:/home/shoko/.shoko
+      - ${MEDIA}:/plex
+
+  shoko-webui:
+    image: shokoanime/shoko-webui:latest
+    container_name: shoko-webui
+    restart: unless-stopped
+    networks:
+      - proxy_net
+    depends_on:
+      - shoko-server
