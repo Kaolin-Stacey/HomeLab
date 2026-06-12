@@ -84,3 +84,17 @@ services:
     networks:
       - media_net
     restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKER_ROOT}/bazarr/config:/config
+      - ${MEDIA}/plex/anime:/anime
+    ports:
+      - 6767:6767
+    restart: unless-stopped
