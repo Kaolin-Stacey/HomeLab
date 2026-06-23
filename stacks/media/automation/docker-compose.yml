@@ -94,7 +94,8 @@ services:
       - TZ=${TZ}
     volumes:
       - ${DOCKER_ROOT}/bazarr/config:/config
-      - ${MEDIA}/anime:/anime
+      - ${MEDIA}:/media
+      - ${DOWNLOADS}:/downloads
     networks:
       - media_net
       - proxy_net
