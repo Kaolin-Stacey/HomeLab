@@ -5,6 +5,20 @@ networks:
     external: true
 
 services:
+  smokeping:
+    image: lscr.io/linuxserver/smokeping:latest
+    container_name: smokeping
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${DOCKER_ROOT}/observability/smokeping/config:/config
+      - ${DOCKER_ROOT}/observability/smokeping/data:/data
+    restart: unless-stopped
+    networks:
+      - proxy_net
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
